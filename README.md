@@ -34,3 +34,11 @@ The project contains the following main components:
   "instant_count": 5,
   "image_name": "01_10_2024_1530_sensor0.jpg"
 }
+```
+
+## Prerequisites
+
+Ensure the following tools are installed on your machine:
+- **Python 3.7+**
+- **Git** (for version control)
+- **YOLOv3 Weights & Config Files**: Make sure the YOLOv3 model files (`yolov3.weights`, `yolov3_testing.cfg`, and `coco.names`) are available.
