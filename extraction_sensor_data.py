@@ -2,23 +2,18 @@ import requests
 import json
 
 # List of sensor IDs
-sensor_ids = [32, 19, 33, 40, 43, 46, 227]
+sensor_ids = [32, 33]
 
-# Base URL for the API
-base_url = "https://preprodapi.mde.epf.fr/measure.php"
+# Updated base URL for the API
+base_url = "http://192.168.139.27/measure.php"
 
 # Dictionary to store the results for JavaScript output
 sensor_data = {}
 
 # Sensor names
 sensor_names = {
-    32: "sound",      
-    19: "Co2 1",      
-    33: "Co2 2",
-    40: "Co2 3",
-    43: "Co2 4",
-    46: "Co2 5",
-    227: "Co2 6"
+    32: "sound",           
+    33: "Co2",
 }
 
 # Loop through each sensor ID and get the final reading
@@ -29,7 +24,7 @@ for sensor_id in sensor_ids:
         'row_count': 1  # Fetch the most recent reading
     }
     
-    # Make the request to the API
+    # Make the request to the updated API URL
     response = requests.get(base_url, params=params)
     
     # Check if the request was successful
