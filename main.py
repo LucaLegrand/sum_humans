@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 import os
-from Yolo_v3_copy import detect_humans  # Importer la nouvelle fonction depuis Yolo_v3_copy.py
 from datetime import datetime
 
 app = FastAPI()
@@ -11,14 +10,10 @@ PERSPI_IMAGE_DIR = "Photos/undistorted_image_full"
 # Fonction pour extraire la date et l'heure du nom de fichier
 def extract_datetime_from_filename(filename):
     try:
-        # Assurer que le fichier correspond au format attendu "DD_MM_YYYY_HHMM_sensor0.jpg"
         if "_sensor0" in filename:
-            # Extraire la partie "DD_MM_YYYY_HHMM"
             date_time_part = filename.split('_sensor0')[0]
-            # Convertir en format utilisable pour le tri
             return datetime.strptime(date_time_part, "%d_%m_%Y_%H%M")
         else:
-            # Retourner None pour les fichiers qui ne correspondent pas au format
             return None
     except Exception as e:
         print(f"Erreur d'extraction de la date pour le fichier {filename}: {e}")
@@ -26,26 +21,29 @@ def extract_datetime_from_filename(filename):
 
 @app.get("/instant_count")
 def get_instant_count():
-    # Lister les fichiers dans le répertoire
-    image_files = [f for f in os.listdir(PERSPI_IMAGE_DIR) if f.endswith(".jpg")]
+    # Simuler une valeur fixe pour le test
+    num_people = 5  # Valeur fixe pour tester l'interface
+    return {"instant_count": num_people, 
+            "photo_date": "2023-12-06 09:20:00",
+            }
 
-    # Filtrer et trier les fichiers qui respectent le format attendu
-    image_files = [f for f in image_files if extract_datetime_from_filename(f) is not None]
-    image_files = sorted(image_files, key=lambda x: extract_datetime_from_filename(x), reverse=True)
+@app.get("/last_count")
+def get_last_count():
+    # Simuler une réponse avec les données pertinentes
+    return {
+        "last_count": 7,
+        "photo_date": "2023-12-06 09:20:00",
+    }
 
-    if not image_files:
-        return {"error": "Aucune image disponible"}
-
-    # Récupérer la dernière image
-    latest_image = os.path.join(PERSPI_IMAGE_DIR, image_files[0])
-
-    try:
-        # Appeler la fonction de détection à partir de Yolo_v3_copy.py
-        num_people = detect_humans(latest_image)
-        # Ajouter le nom du fichier analysé à la réponse JSON
-        return {"instant_count": num_people, "image_name": os.path.basename(latest_image)}
-    except Exception as e:
-        return {"error": str(e)}
+@app.get("/multi_count")
+def get_multi_count(start_date: str, end_date: str):
+    # Simuler une réponse avec des données factices
+    results = [
+        {"photo_date": "2023-12-04 14:32:00", "count": 7},
+        {"photo_date": "2023-12-03 15:45:00", "count": 8},
+        {"photo_date": "2023-12-02 10:10:00", "count": 6}
+    ]
+    return {"results": results}
 
 if __name__ == "__main__":
     import uvicorn
