@@ -36,14 +36,30 @@ def get_last_count():
     }
 
 @app.get("/multi_count")
-def get_multi_count(start_date: str, end_date: str):
-    # Simuler une réponse avec des données factices
-    results = [
+def get_multi_count(start_date: str, start_time: str, end_date: str, end_time: str):
+    # Simuler des données d'exemple
+    simulated_data = [
         {"photo_date": "2023-12-04 14:32:00", "count": 7},
         {"photo_date": "2023-12-03 15:45:00", "count": 8},
         {"photo_date": "2023-12-02 10:10:00", "count": 6}
     ]
-    return {"results": results}
+    
+    # Combiner la date et l'heure en un seul champ
+    from datetime import datetime
+    start_datetime = datetime.strptime(f"{start_date} {start_time}", "%Y-%m-%d %H:%M")
+    end_datetime = datetime.strptime(f"{end_date} {end_time}", "%Y-%m-%d %H:%M")
+
+    # Filtrer les données en fonction de l'intervalle date-heure
+    results = [
+        data for data in simulated_data
+        if start_datetime <= datetime.strptime(data["photo_date"], "%Y-%m-%d %H:%M:%S") <= end_datetime
+    ]
+
+    # Retourner les résultats ou un message d'erreur si aucun résultat n'est trouvé
+    if results:
+        return {"results": results}
+    else:
+        return {"error": "Aucune donnée trouvée pour l'intervalle spécifié."}
 
 if __name__ == "__main__":
     import uvicorn

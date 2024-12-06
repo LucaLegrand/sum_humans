@@ -97,23 +97,34 @@ elif option == "last_count":
 elif option == "multi_count":
     st.markdown('<div class="box">Endpoint : Multi Count</div>', unsafe_allow_html=True)
 
-    # Sélection des dates
+    # Sélection des dates et heures
     start_date = st.date_input("Date de début", datetime.now())
+    start_time = st.time_input("Heure de début", datetime.now().time())
     end_date = st.date_input("Date de fin", datetime.now())
-    
+    end_time = st.time_input("Heure de fin", datetime.now().time())
+
     if st.button("Obtenir les comptes multiples"):
         try:
-            # Appel à l'API multi_count avec les paramètres
-            params = {"start_date": start_date.strftime("%Y-%m-%d"), "end_date": end_date.strftime("%Y-%m-%d")}
+            # Construire les paramètres pour l'API
+            params = {
+                "start_date": start_date.strftime("%Y-%m-%d"),
+                "start_time": start_time.strftime("%H:%M"),
+                "end_date": end_date.strftime("%Y-%m-%d"),
+                "end_time": end_time.strftime("%H:%M")
+            }
             response = requests.get(API_BASE_URL + ENDPOINTS["multi_count"], params=params)
             if response.status_code == 200:
                 data = response.json()
-                results = data["results"]
-                
-                # Afficher chaque entrée avec les dates et les comptes
-                for result in results:
-                    st.markdown(f'<div class="box">Date de la photo : <b>{result["photo_date"]}</b></div>', unsafe_allow_html=True)
-                    st.markdown(f'<div class="box">Nombre de personnes détectées : <b>{result["count"]}</b></div>', unsafe_allow_html=True)
+
+                # Vérification des erreurs retournées par l'API
+                if "error" in data:
+                    st.error(data["error"])
+                else:
+                    # Affichage des résultats
+                    results = data["results"]
+                    for result in results:
+                        st.markdown(f'<div class="box">Date de la photo : <b>{result["photo_date"]}</b></div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="box">Nombre de personnes détectées : <b>{result["count"]}</b></div>', unsafe_allow_html=True)
             else:
                 st.error(f"Erreur : Impossible de contacter l'API. Statut {response.status_code}")
         except Exception as e:
